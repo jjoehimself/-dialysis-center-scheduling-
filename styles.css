@@ -61,6 +61,57 @@ button:disabled {
 .summary-card,
 .week-board,
 .staff-board,
+
+.capacity-overview {
+  grid-column: span 1;
+  min-height: 132px;
+}
+
+.capacity-overview-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.capacity-overview-item {
+  display: grid;
+  align-content: center;
+  justify-items: start;
+  gap: 1px;
+  min-width: 0;
+  padding: 6px 8px;
+  border: 1px solid rgba(23, 107, 135, 0.14);
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.82);
+}
+
+.capacity-overview-item > span {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.capacity-overview-item > strong {
+  color: var(--ink);
+  font-size: 18px;
+  line-height: 1.1;
+  white-space: nowrap;
+}
+
+.capacity-overview-item > small {
+  color: var(--muted);
+  font-size: 9px;
+  line-height: 1.25;
+}
+
+.capacity-overview-footnote {
+  margin-top: 7px;
+  padding-top: 0;
+  color: var(--muted);
+  font-size: 9px;
+  line-height: 1.35;
+}
+
 .machine-board,
 .patient-editor,
 .patient-list-panel,
@@ -296,14 +347,34 @@ main {
 .summary-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 12px;
+  gap: 14px;
   margin-bottom: 16px;
+  align-items: stretch;
 }
 
 .summary-card {
-  min-height: 86px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 132px;
   padding: 16px;
-  border-radius: var(--radius);
+  border-radius: 14px;
+  overflow: hidden;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(248, 250, 252, 0.95));
+}
+
+.summary-card.wide {
+  grid-column: span 2;
+}
+
+.summary-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--line-strong);
 }
 
 .week-board {
@@ -425,6 +496,49 @@ main {
   padding: 12px;
 }
 
+.staff-shift-empty,
+.staff-shift-warning {
+  margin: 12px;
+  padding: 12px;
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--radius);
+  color: var(--muted);
+  background: #fff;
+  font-size: 13px;
+  text-align: center;
+}
+
+.staff-shift-warning {
+  border-color: rgba(173, 111, 0, 0.35);
+  color: var(--warning);
+  background: var(--accent-soft);
+}
+
+.cache-button {
+  border-style: dashed;
+}
+
+.about-button {
+  border-style: solid;
+}
+
+.about-dialog-body {
+  padding: 4px 2px 8px;
+  color: var(--ink);
+  font-size: 16px;
+  line-height: 1.9;
+}
+
+.about-dialog-body p {
+  margin: 0 0 10px;
+}
+
+.about-sign {
+  text-align: right;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
 .staff-field {
   min-width: 0;
 }
@@ -502,18 +616,133 @@ main {
   font-size: 12px;
 }
 
-.summary-card span {
+.summary-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.summary-label {
   display: block;
   color: var(--muted);
   font-size: 13px;
+  font-weight: 700;
 }
 
-.summary-card strong {
+.summary-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 2px 9px;
+  border-radius: 999px;
+  color: var(--primary-dark);
+  background: var(--primary-soft);
+  font-size: 11px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.summary-value {
   display: block;
-  margin-top: 8px;
+  margin-top: 2px;
+  color: var(--ink);
   font-size: 30px;
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+}
+
+.summary-note {
+  margin-top: auto;
+  padding-top: 10px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.summary-chip-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+.summary-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 34px;
+  padding: 6px 10px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  color: var(--ink);
+  background: #fff;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.summary-chip strong {
+  margin: 0;
+  font-size: 16px;
   line-height: 1;
 }
+
+.summary-progress {
+  margin-top: 12px;
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.18);
+  overflow: hidden;
+}
+
+.summary-progress-bar {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, rgba(23, 107, 135, 0.72), rgba(23, 107, 135, 1));
+}
+
+.summary-progress-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.summary-card.tone-accent::before { background: linear-gradient(90deg, #176b87, #4aa5bf); }
+.summary-card.tone-info::before { background: linear-gradient(90deg, #2f6f6d, #5fa8a3); }
+.summary-card.tone-success::before { background: linear-gradient(90deg, #1f7a4d, #45b36b); }
+.summary-card.tone-warning::before { background: linear-gradient(90deg, #ad6f00, #d89b1d); }
+.summary-card.tone-danger::before { background: linear-gradient(90deg, #b42318, #de584c); }
+.summary-card.tone-purple::before { background: linear-gradient(90deg, #6f42c1, #8a63d2); }
+.summary-card.tone-teal::before { background: linear-gradient(90deg, #147d74, #2bb7a5); }
+.summary-card.tone-neutral::before { background: linear-gradient(90deg, #64748b, #94a3b8); }
+.summary-card.tone-orange::before { background: linear-gradient(90deg, #b45309, #ea7f24); }
+.summary-card.tone-gold::before { background: linear-gradient(90deg, #a16207, #d4a017); }
+
+.summary-card.tone-accent { background: linear-gradient(180deg, rgba(226, 243, 246, 0.9), rgba(255, 255, 255, 0.98)); }
+.summary-card.tone-info { background: linear-gradient(180deg, rgba(223, 244, 238, 0.78), rgba(255, 255, 255, 0.98)); }
+.summary-card.tone-success { background: linear-gradient(180deg, rgba(229, 246, 236, 0.95), rgba(255, 255, 255, 0.98)); }
+.summary-card.tone-warning { background: linear-gradient(180deg, rgba(255, 242, 219, 0.9), rgba(255, 255, 255, 0.98)); }
+.summary-card.tone-danger { background: linear-gradient(180deg, rgba(255, 230, 227, 0.92), rgba(255, 255, 255, 0.98)); }
+.summary-card.tone-purple { background: linear-gradient(180deg, rgba(236, 238, 255, 0.9), rgba(255, 255, 255, 0.98)); }
+.summary-card.tone-teal { background: linear-gradient(180deg, rgba(223, 244, 238, 0.95), rgba(255, 255, 255, 0.98)); }
+.summary-card.tone-neutral { background: linear-gradient(180deg, rgba(241, 245, 249, 0.95), rgba(255, 255, 255, 0.98)); }
+.summary-card.tone-orange { background: linear-gradient(180deg, rgba(255, 236, 225, 0.92), rgba(255, 255, 255, 0.98)); }
+.summary-card.tone-gold { background: linear-gradient(180deg, rgba(255, 244, 215, 0.94), rgba(255, 255, 255, 0.98)); }
+
+.summary-chip.tone-neutral { background: #f1f5f9; border-color: #d8e0ea; }
+.summary-chip.tone-info { background: #e7f6f3; border-color: rgba(47, 111, 109, 0.18); color: #215b57; }
+.summary-chip.tone-warning { background: #fff2db; border-color: rgba(173, 111, 0, 0.16); color: #9a6400; }
+.summary-chip.tone-danger { background: #ffe6e3; border-color: rgba(180, 35, 24, 0.16); color: #aa2a20; }
+.summary-chip.tone-purple { background: #eceeff; border-color: rgba(111, 66, 193, 0.15); color: #5b41a9; }
+.summary-chip.tone-teal { background: #dff4ee; border-color: rgba(20, 125, 116, 0.16); color: #146c5f; }
+.summary-chip.tone-orange { background: #ffe8dc; border-color: rgba(180, 83, 9, 0.16); color: #a04b09; }
+.summary-chip.tone-gold { background: #fff1ce; border-color: rgba(161, 98, 7, 0.18); color: #8a5a07; }
 
 .machine-board,
 .patient-editor,
@@ -599,6 +828,174 @@ main {
   gap: 8px;
 }
 
+.schedule-priority-control {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 38px;
+  padding: 4px 8px 4px 10px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  color: var(--muted);
+  background: #fff;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.schedule-priority-control span {
+  margin: 0;
+}
+
+.schedule-priority-control select {
+  width: auto;
+  min-width: 104px;
+  min-height: 30px;
+  padding: 3px 28px 3px 8px;
+  border: 0;
+  box-shadow: none;
+  font-weight: 700;
+}
+
+.nurse-zone-overview {
+  margin-bottom: 18px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(248, 250, 252, 0.96));
+}
+
+.nurse-zone-overview-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.nurse-zone-overview-header h3,
+.nurse-zone-overview-title {
+  margin: 0;
+  color: var(--ink);
+  font-size: 16px;
+  font-weight: 900;
+}
+
+.nurse-zone-overview-header p {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.nurse-zone-shifts {
+  display: grid;
+  gap: 12px;
+}
+
+.nurse-zone-shift {
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr);
+  gap: 10px;
+  align-items: stretch;
+}
+
+.nurse-zone-shift-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 78px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  color: var(--primary-dark);
+  background: var(--primary-soft);
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.nurse-zone-card-list {
+  display: flex;
+  gap: 10px;
+  min-width: 0;
+  overflow-x: auto;
+  padding-bottom: 3px;
+}
+
+.nurse-zone-card {
+  flex: 0 0 auto;
+  min-width: 190px;
+  padding: 10px 12px;
+  border: 2px solid var(--nurse-border);
+  border-radius: 14px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.98), var(--nurse-soft));
+}
+
+.nurse-zone-name {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 28px;
+  color: var(--nurse-accent);
+  font-size: 17px;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-align: center;
+}
+
+.nurse-zone-machines {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.nurse-zone-machine {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  min-height: 28px;
+  padding: 0 8px;
+  border: 1px solid var(--nurse-border);
+  border-radius: 8px;
+  color: var(--nurse-accent);
+  background: #fff;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.nurse-zone-machine.hdf {
+  color: var(--warning);
+  border-color: rgba(173, 111, 0, 0.34);
+  background: var(--accent-soft);
+}
+
+.nurse-zone-meta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.nurse-zone-meta span {
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.82);
+}
+
+.nurse-zone-overview.empty {
+  display: grid;
+  gap: 6px;
+}
+
+.nurse-zone-empty {
+  color: var(--muted);
+  font-size: 12px;
+}
+
 .machine-rows {
   display: grid;
   gap: 18px;
@@ -671,6 +1068,16 @@ main {
 .machine-card.machine-zone-hcv,
 .machine-card.machine-zone-t {
   border-color: rgba(126, 70, 142, 0.4);
+}
+
+.machine-card.machine-paused {
+  border-color: rgba(102, 112, 133, 0.65);
+  background: #eef1f4;
+  box-shadow: inset 0 0 0 1px rgba(102, 112, 133, 0.08);
+}
+
+.machine-card.machine-paused .machine-card-header {
+  background: #f1f3f5;
 }
 
 .inactive-machine-slot {
@@ -765,6 +1172,11 @@ main {
   background: #dff4ee;
 }
 
+.machine-type-badge.paused {
+  color: #344054;
+  background: #d0d5dd;
+}
+
 .slot-stack {
   display: grid;
   flex: 1;
@@ -801,6 +1213,29 @@ main {
   background: var(--danger-soft);
 }
 
+.shift-slot.paused-machine-slot {
+  border-style: dashed;
+  border-color: #98a2b3;
+  background: #f2f4f7;
+}
+
+.shift-slot.paused-machine-slot.assigned {
+  border-style: solid;
+  border-color: var(--danger);
+  background: #fff0ee;
+}
+
+.slot-paused-warning {
+  align-self: flex-start;
+  margin-bottom: 5px;
+  padding: 2px 7px;
+  border-radius: 999px;
+  color: var(--danger);
+  background: var(--danger-soft);
+  font-size: 11px;
+  font-weight: 800;
+}
+
 .slot-topline {
   display: flex;
   align-items: center;
@@ -831,6 +1266,29 @@ main {
   font-size: 11px;
   font-weight: 800;
   line-height: 1.4;
+}
+
+
+.shift-slot.nurse-zone-linked {
+  position: relative;
+  border-left: 5px solid var(--nurse-accent);
+  background-image: linear-gradient(90deg, var(--nurse-soft), rgba(255,255,255,0) 42%);
+}
+
+.shift-slot.nurse-zone-linked.assigned {
+  background-image: linear-gradient(90deg, var(--nurse-soft), rgba(229, 246, 236, 0.96) 42%);
+}
+
+.slot-nurse-dot {
+  position: absolute;
+  top: 10px;
+  right: 42px;
+  width: 9px;
+  height: 9px;
+  border: 2px solid #fff;
+  border-radius: 999px;
+  background: var(--nurse-accent);
+  box-shadow: 0 0 0 1px var(--nurse-border);
 }
 
 .slot-empty {
@@ -889,6 +1347,14 @@ label span {
   color: var(--muted);
   font-size: 13px;
   font-weight: 700;
+}
+
+.field-hint {
+  display: block;
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.45;
 }
 
 .full-field {
@@ -1105,6 +1571,14 @@ label span {
   border-color: rgba(20, 108, 95, 0.34);
   color: #146c5f;
   background: #dff4ee;
+}
+
+.preview-machine.paused {
+  border-style: dashed;
+  border-color: #667085;
+  color: #344054;
+  background: #e4e7ec;
+  opacity: 0.88;
 }
 
 .preview-machine.inactive {
@@ -1329,4 +1803,701 @@ label span {
   .shift-slot {
     min-height: 58px;
   }
+}
+
+@media (max-width: 960px) {
+  .nurse-zone-shift {
+    grid-template-columns: 1fr;
+  }
+
+  .nurse-zone-shift-label {
+    min-height: 34px;
+  }
+
+  .nurse-zone-card {
+    min-width: 170px;
+  }
+}
+
+
+/* 2026.06.17.9：护士管区与对应班次机器合并显示 */
+.shift-merged-row {
+  display: grid;
+  gap: 14px;
+}
+
+.row-shift-section {
+  display: grid;
+  grid-template-columns: 58px minmax(0, 1fr);
+  gap: 10px;
+  align-items: stretch;
+}
+
+.row-shift-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100%;
+  border: 1px solid rgba(23, 107, 135, 0.18);
+  border-radius: 12px;
+  color: var(--primary-dark);
+  background: var(--primary-soft);
+  font-size: 16px;
+  font-weight: 900;
+}
+
+.row-shift-content {
+  min-width: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.aligned-nurse-grid,
+.shift-machine-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--machines-per-row), minmax(152px, 1fr));
+  gap: 10px;
+  min-width: 0;
+}
+
+.aligned-nurse-grid {
+  align-items: stretch;
+}
+
+.aligned-nurse-band {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+  padding: 9px 10px;
+  border: 2px solid var(--nurse-border);
+  border-radius: 12px;
+  background: linear-gradient(180deg, var(--nurse-soft), rgba(255,255,255,0.98));
+}
+
+.aligned-nurse-name {
+  overflow: hidden;
+  color: var(--nurse-accent);
+  font-size: 16px;
+  font-weight: 900;
+  line-height: 1.15;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.aligned-nurse-machines {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+}
+
+.aligned-nurse-machine {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 30px;
+  min-height: 26px;
+  padding: 0 7px;
+  border: 1px solid var(--nurse-border);
+  border-radius: 8px;
+  color: var(--nurse-accent);
+  background: rgba(255,255,255,0.96);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.aligned-nurse-machine.hdf {
+  border-color: rgba(173, 111, 0, 0.32);
+  color: var(--warning);
+  background: var(--accent-soft);
+}
+
+.aligned-nurse-meta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.aligned-nurse-meta span {
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.85);
+}
+
+.aligned-nurse-empty {
+  grid-column: 1 / -1;
+  padding: 9px 12px;
+  border: 1px dashed var(--line-strong);
+  border-radius: 10px;
+  color: var(--muted);
+  background: #fff;
+  font-size: 12px;
+  text-align: center;
+}
+
+.machine-shift-card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--panel-soft);
+  overflow: hidden;
+}
+
+.machine-shift-card.machine-type-hemodialysis {
+  border-color: rgba(47, 111, 109, 0.28);
+}
+
+.machine-shift-card.machine-type-hemofiltration {
+  border-color: rgba(143, 95, 42, 0.42);
+  background: #fff8ed;
+}
+
+.machine-shift-card.machine-type-perfusion {
+  border-color: rgba(83, 88, 172, 0.36);
+  background: #f5f6ff;
+}
+
+.machine-shift-card.machine-zone-severe {
+  border-color: rgba(180, 35, 24, 0.46);
+}
+
+.machine-shift-card.machine-zone-infection,
+.machine-shift-card.machine-zone-hbc,
+.machine-shift-card.machine-zone-hbv,
+.machine-shift-card.machine-zone-hcv,
+.machine-shift-card.machine-zone-t {
+  border-color: rgba(126, 70, 142, 0.4);
+}
+
+.machine-shift-card.machine-paused {
+  border-color: rgba(102, 112, 133, 0.65);
+  background: #eef1f4;
+}
+
+.machine-card-header.compact {
+  min-height: 36px;
+  padding: 7px 9px;
+}
+
+.machine-shift-card .shift-slot {
+  flex: 1;
+  min-height: 112px;
+  margin: 8px;
+  width: auto;
+  height: auto;
+}
+
+.machine-shift-card.inactive-machine-slot {
+  min-height: 156px;
+}
+
+@media (max-width: 960px) {
+  .row-shift-section {
+    grid-template-columns: 44px minmax(0, 1fr);
+  }
+
+  .aligned-nurse-grid,
+  .shift-machine-grid {
+    grid-template-columns: repeat(var(--machines-per-row), minmax(124px, 1fr));
+    overflow-x: auto;
+  }
+}
+
+
+
+
+
+
+@media (max-width: 960px) {
+  .capacity-overview { grid-column: span 1; }
+  .capacity-overview-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 520px) {
+  .capacity-overview-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+
+/* 单行紧凑护士管区版 */
+.compact-row-layout {
+  display: grid;
+  gap: 10px;
+}
+
+.packed-nurse-bands {
+  display: grid;
+  gap: 8px;
+}
+
+.packed-single-line {
+  display: grid;
+  grid-template-columns: repeat(var(--machines-per-row), minmax(152px, 1fr));
+  gap: 10px;
+}
+
+.packed-band {
+  padding: 8px 10px;
+}
+
+.packed-band.shift-morning {
+  box-shadow: inset 0 3px 0 rgba(23, 107, 135, 0.18);
+}
+
+.packed-band.shift-afternoon {
+  box-shadow: inset 0 3px 0 rgba(31, 122, 77, 0.18);
+}
+
+.merged-machine-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--machines-per-row), minmax(152px, 1fr));
+  gap: 10px;
+}
+
+.merged-shift-stack {
+  display: grid;
+  gap: 8px;
+  padding: 8px;
+}
+
+.machine-card .shift-slot {
+  width: auto;
+  height: auto;
+  min-height: 104px;
+}
+
+.machine-card .shift-slot + .shift-slot {
+  margin-top: 0;
+}
+
+.row-shift-section,
+.row-shift-label,
+.row-shift-content,
+.shift-machine-grid {
+  display: none !important;
+}
+
+@media (max-width: 960px) {
+  .packed-single-line,
+  .merged-machine-grid {
+    grid-template-columns: repeat(var(--machines-per-row), minmax(120px, 1fr));
+  }
+}
+
+
+/* 上午/下午左右分栏版 */
+.row-title {
+  gap: 8px;
+  margin-bottom: 6px;
+  color: #78879c;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.split-shift-bands {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.shift-band-panel {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.shift-band-header {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  justify-self: start;
+  min-height: 28px;
+  padding: 0 12px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.shift-band-morning .shift-band-header,
+.shift-band-panel.shift-band-morning .shift-band-header {
+  color: var(--primary-dark);
+  background: var(--primary-soft);
+}
+
+.shift-band-afternoon .shift-band-header,
+.shift-band-panel.shift-band-afternoon .shift-band-header {
+  color: #23764d;
+  background: rgba(49, 163, 84, 0.10);
+}
+
+.shift-panel-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--machines-per-row), minmax(72px, 1fr));
+  gap: 8px;
+}
+
+.packed-band {
+  padding: 7px 8px;
+}
+
+.aligned-nurse-name {
+  font-size: 15px;
+}
+
+.aligned-nurse-machines {
+  gap: 5px;
+}
+
+.aligned-nurse-machine {
+  min-width: 26px;
+  min-height: 24px;
+  padding: 0 6px;
+  font-size: 12px;
+}
+
+.aligned-nurse-meta {
+  gap: 5px;
+  font-size: 10px;
+}
+
+.shift-panel-empty {
+  min-height: 74px;
+}
+
+@media (max-width: 1200px) {
+  .split-shift-bands {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+/* 第几排标题与排间分隔强化 */
+.machine-row {
+  position: relative;
+  padding-top: 4px;
+}
+
+.machine-row + .machine-row {
+  margin-top: 10px;
+  padding-top: 18px;
+  border-top: 2px solid rgba(23, 107, 135, 0.16);
+}
+
+.row-title {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 28px;
+  margin: 0 0 10px;
+  color: #52647a;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+}
+
+.row-title::before {
+  content: "";
+  flex: 0 0 5px;
+  width: 5px;
+  height: 22px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #176b87, #4eb5c7);
+  box-shadow: 0 0 0 3px rgba(23, 107, 135, 0.08);
+}
+
+.row-title::after {
+  content: "";
+  flex: 1;
+  height: 2px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(23, 107, 135, 0.38), rgba(23, 107, 135, 0.08));
+}
+
+.row-title + .split-shift-bands {
+  margin-top: 0;
+}
+
+
+/* 上午下午严格分栏版 */
+.strict-split-row {
+  display: grid;
+  gap: 10px;
+}
+
+.row-split-columns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.shift-column {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+
+.shift-column-label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  justify-self: start;
+  min-height: 28px;
+  padding: 0 14px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.shift-column-morning .shift-column-label {
+  color: var(--primary-dark);
+  background: var(--primary-soft);
+}
+
+.shift-column-afternoon .shift-column-label {
+  color: #23764d;
+  background: rgba(49, 163, 84, 0.10);
+}
+
+.shift-column-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--machines-per-row), minmax(72px, 1fr));
+  gap: 10px;
+}
+
+.shift-column .machine-card .shift-slot {
+  min-height: 116px;
+}
+
+.shift-column .machine-card {
+  min-width: 0;
+}
+
+.shift-column .machine-card-header.compact {
+  padding-bottom: 8px;
+}
+
+.shift-band-panel {
+  display: grid;
+  gap: 6px;
+}
+
+.shift-panel-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--machines-per-row), minmax(72px, 1fr));
+  gap: 8px;
+}
+
+.shift-panel-empty {
+  min-height: 92px;
+}
+
+.aligned-nurse-name {
+  font-size: 15px;
+}
+
+.aligned-nurse-meta {
+  gap: 5px;
+  font-size: 10px;
+}
+
+.row-title {
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+@media (max-width: 1280px) {
+  .row-split-columns {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+/* 上午下午上下双栏版 */
+.row-split-columns {
+  grid-template-columns: 1fr !important;
+  gap: 16px;
+}
+
+.shift-column {
+  padding: 4px 0 2px;
+}
+
+.shift-column + .shift-column {
+  border-top: 2px solid rgba(120, 135, 156, 0.14);
+  padding-top: 14px;
+}
+
+.shift-column-label {
+  min-height: 30px;
+  padding: 0 16px;
+  border-radius: 14px;
+  font-size: 15px;
+}
+
+.shift-column-grid {
+  gap: 12px;
+}
+
+.shift-band-panel {
+  margin-bottom: 2px;
+}
+
+.shift-panel-empty {
+  min-height: 84px;
+}
+
+@media (max-width: 1280px) {
+  .row-split-columns {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+
+/* 修复护士管区因 DOM 顺序导致上下错位 */
+.shift-panel-grid {
+  grid-auto-flow: row dense;
+  align-items: stretch;
+}
+
+.shift-panel-grid .aligned-nurse-band {
+  grid-row: 1;
+}
+
+
+/* 排标题增强醒目版 */
+.machine-row {
+  position: relative;
+  padding-top: 6px;
+}
+
+.machine-row + .machine-row {
+  margin-top: 14px;
+  padding-top: 22px;
+  border-top: 2px solid rgba(23, 107, 135, 0.18);
+}
+
+.row-title {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 34px;
+  margin: 0 0 12px;
+  color: #2f445c;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.row-title::before {
+  content: "";
+  flex: 0 0 7px;
+  width: 7px;
+  height: 28px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #0f88a5 0%, #49bfd0 100%);
+  box-shadow: 0 0 0 4px rgba(23, 107, 135, 0.10), 0 6px 14px rgba(23, 107, 135, 0.12);
+}
+
+.row-title::after {
+  content: "";
+  flex: 1;
+  height: 3px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(23, 107, 135, 0.55) 0%, rgba(23, 107, 135, 0.18) 42%, rgba(23, 107, 135, 0.04) 100%);
+}
+
+.row-title span,
+.row-title strong {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 0 12px;
+  border-radius: 12px;
+  background: linear-gradient(180deg, rgba(232, 246, 249, 0.95), rgba(219, 239, 244, 0.95));
+  border: 1px solid rgba(23, 107, 135, 0.16);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.75), 0 2px 8px rgba(23, 107, 135, 0.06);
+}
+
+/* 24-language selector */
+.brand-copy { min-width: 0; }
+.brand-title-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+.header-language-control {
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
+}
+.header-language-control select {
+  min-width: 150px;
+  max-width: 210px;
+  min-height: 38px;
+  padding: 7px 34px 7px 11px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+  color: var(--ink);
+  font-weight: 700;
+}
+.sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+.rtl-layout .topbar,
+.rtl-layout .brand-title-row,
+.rtl-layout .top-actions,
+.rtl-layout .week-toolbar,
+.rtl-layout .board-toolbar,
+.rtl-layout .panel-header {
+  direction: rtl;
+}
+.rtl-layout input,
+.rtl-layout select,
+.rtl-layout textarea {
+  text-align: right;
+}
+@media (max-width: 960px) {
+  .brand-title-row { align-items: flex-start; flex-direction: column; gap: 7px; }
+  .header-language-control select { min-width: 180px; }
+}
+
+.about-contact {
+  margin-top: 14px !important;
+  padding: 12px 14px;
+  border: 1px solid rgba(23, 107, 135, 0.16);
+  border-radius: 12px;
+  background: rgba(226, 243, 246, 0.55);
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.about-contact a {
+  color: var(--primary-dark);
+  text-decoration: none;
+  word-break: break-all;
+}
+
+.about-contact a:hover {
+  text-decoration: underline;
 }

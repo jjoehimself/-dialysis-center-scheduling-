@@ -1,479 +1,509 @@
-<!doctype html>
+<!DOCTYPE html>
+
 <html lang="zh-CN">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>血透室排班系统</title>
-    <link rel="stylesheet" href="styles.css" />
-  </head>
-  <body>
-    <div class="app-shell">
-      <header class="topbar">
-        <div class="brand-block">
-          <div class="brand-mark">HD</div>
-          <div>
-            <h1 id="roomTitle">血透室排班系统</h1>
-            <p id="storageStatus">本地自动保存，打开后自动读取</p>
-          </div>
-        </div>
-        <div class="top-actions">
-          <label class="date-control">
-            <span>日期</span>
-            <input id="scheduleDate" type="date" />
-          </label>
-          <button class="ghost-button" id="printSchedule" type="button">打印</button>
-          <button class="primary-button" id="exportData" type="button">导出</button>
-          <label class="ghost-button import-button" for="importData">
-            导入
-            <input id="importData" type="file" accept="application/json" />
-          </label>
-          <button class="danger-button" id="resetAllData" type="button">全部重置</button>
-        </div>
-      </header>
-
-      <nav class="tabs" aria-label="主功能">
-        <button class="tab-button active" type="button" data-view="schedule">排班台</button>
-        <button class="tab-button" type="button" data-view="patients">患者库</button>
-        <button class="tab-button" type="button" data-view="staff">医护库</button>
-        <button class="tab-button" type="button" data-view="layout">布局设置</button>
-      </nav>
-
-      <main>
-        <section class="view active" id="scheduleView">
-          <div class="summary-grid" id="summaryGrid"></div>
-
-          <section class="week-board" aria-label="周排班导航">
-            <div class="week-toolbar">
-              <button class="ghost-button" id="prevWeek" type="button">上一周</button>
-              <div>
-                <h2 id="weekTitle">本周排班</h2>
-                <p id="weekMeta">默认读取每周模板，可对单日单独调整</p>
-              </div>
-              <button class="ghost-button" id="nextWeek" type="button">下一周</button>
-              <button class="ghost-button" id="todayButton" type="button">今天</button>
-            </div>
-            <div class="week-day-strip" id="weekDayStrip"></div>
-          </section>
-
-          <section class="machine-board" aria-label="机器排班表">
-            <div class="board-toolbar">
-              <div>
-                <h2 id="boardTitle">今日排班</h2>
-                <p id="boardMeta"></p>
-              </div>
-              <div class="board-actions">
-                <button class="primary-button" id="autoScheduleDay" type="button">生成周模板建议</button>
-                <button class="ghost-button" id="saveDayAsWeeklyTemplate" type="button">本日设为周模板</button>
-                <button class="ghost-button" id="copyPreviousDay" type="button">复制前一天</button>
-                <button class="danger-button" id="clearDay" type="button">清空当日</button>
-              </div>
-            </div>
-            <div class="machine-rows" id="machineRows"></div>
-          </section>
-        </section>
-
-        <section class="view" id="patientsView">
-          <div class="patient-management">
-            <section class="patient-editor">
-              <div class="panel-header">
-                <h2 id="patientFormTitle">新增患者</h2>
-                <button class="ghost-button" id="resetPatientForm" type="button">新建</button>
-              </div>
-              <form id="patientForm">
-                <input type="hidden" id="patientId" />
-                <div class="form-grid two">
-                  <label>
-                    <span>姓名</span>
-                    <input id="patientName" required maxlength="32" autocomplete="off" />
-                  </label>
-                  <label>
-                    <span>透析号</span>
-                    <input id="dialysisNo" maxlength="32" autocomplete="off" />
-                  </label>
-                  <label>
-                    <span>性别</span>
-                    <select id="patientGender">
-                      <option value="">未填</option>
-                      <option value="男">男</option>
-                      <option value="女">女</option>
-                    </select>
-                  </label>
-                  <label>
-                    <span>年龄</span>
-                    <input id="patientAge" type="number" min="0" max="120" />
-                  </label>
-                  <label>
-                    <span>联系电话</span>
-                    <input id="patientPhone" maxlength="32" autocomplete="off" />
-                  </label>
-                  <label>
-                    <span>干体重 kg</span>
-                    <input id="dryWeight" type="number" min="0" max="300" step="0.1" />
-                  </label>
-                  <label>
-                    <span>血管通路</span>
-                    <select id="vascularAccess">
-                      <option value="">未填</option>
-                      <option value="自体内瘘">自体内瘘</option>
-                      <option value="人工血管">人工血管</option>
-                      <option value="长期导管">长期导管</option>
-                      <option value="临时导管">临时导管</option>
-                      <option value="其他">其他</option>
-                    </select>
-                  </label>
-                  <label>
-                    <span>常规治疗</span>
-                    <select id="patientTreatmentType">
-                      <option value="hemodialysis">血透</option>
-                      <option value="hemofiltration">血滤</option>
-                      <option value="perfusion">灌流</option>
-                    </select>
-                  </label>
-                  <label>
-                    <span>每周次数</span>
-                    <input id="weeklyTreatmentCount" type="number" min="1" max="6" value="3" />
-                  </label>
-                  <label>
-                    <span>每月血滤次数</span>
-                    <input id="monthlyHdfCount" type="number" min="0" max="4" value="1" />
-                  </label>
-                  <label>
-                    <span>状态</span>
-                    <select id="patientStatus">
-                      <option value="active">在透</option>
-                      <option value="paused">暂停</option>
-                    </select>
-                  </label>
-                  <label>
-                    <span>感染标识</span>
-                    <select id="infectionFlag">
-                      <option value="">无</option>
-                      <option value="HBC">HBC</option>
-                      <option value="HBV">HBV</option>
-                      <option value="HCV">HCV</option>
-                      <option value="T">T</option>
-                    </select>
-                  </label>
-                  <label>
-                    <span>护理组别</span>
-                    <select id="careLevel">
-                      <option value="standard">普通组</option>
-                      <option value="severe">严重组</option>
-                    </select>
-                  </label>
-                  <label>
-                    <span>常用班次</span>
-                    <select id="preferredShift">
-                      <option value="">不限</option>
-                      <option value="morning">上午</option>
-                      <option value="afternoon">下午</option>
-                    </select>
-                  </label>
-                </div>
-                <fieldset class="preference-fieldset">
-                  <legend>透析星期倾向</legend>
-                  <div class="checkbox-grid" id="patientPreferredDays">
-                    <label><input type="checkbox" value="1" /> 周一</label>
-                    <label><input type="checkbox" value="2" /> 周二</label>
-                    <label><input type="checkbox" value="3" /> 周三</label>
-                    <label><input type="checkbox" value="4" /> 周四</label>
-                    <label><input type="checkbox" value="5" /> 周五</label>
-                    <label><input type="checkbox" value="6" /> 周六</label>
-                    <label><input type="checkbox" value="0" /> 周日</label>
-                  </div>
-                </fieldset>
-                <label class="full-field">
-                  <span>备注</span>
-                  <textarea id="patientNote" rows="4" maxlength="300"></textarea>
-                </label>
-                <div class="form-actions">
-                  <button class="primary-button" type="submit">保存患者</button>
-                  <button class="danger-button hidden" id="deletePatient" type="button">删除患者</button>
-                </div>
-              </form>
-            </section>
-
-            <section class="patient-list-panel">
-              <div class="panel-header">
-                <h2>患者列表</h2>
-                <input id="patientSearch" class="search-input compact" type="search" placeholder="搜索患者" />
-              </div>
-              <div class="patient-table-wrap">
-                <table class="patient-table">
-                  <thead>
-                    <tr>
-                      <th>姓名</th>
-                      <th>透析号</th>
-                      <th>通路</th>
-                      <th>治疗</th>
-                      <th>班次</th>
-                      <th>状态</th>
-                      <th>操作</th>
-                    </tr>
-                  </thead>
-                  <tbody id="patientTableBody"></tbody>
-                </table>
-              </div>
-            </section>
-          </div>
-        </section>
-
-        <section class="view" id="staffView">
-          <section class="staff-board" aria-label="医护排班表">
-            <div class="board-toolbar">
-              <div>
-                <h2 id="staffTitle">医护排班</h2>
-                <p id="staffMeta"></p>
-              </div>
-              <label class="scope-control">
-                <span>保存范围</span>
-                <select id="staffScheduleScope">
-                  <option value="weekly">每周重复</option>
-                  <option value="date">仅当前日期</option>
-                </select>
-              </label>
-            </div>
-            <div class="staff-schedule-grid" id="staffScheduleGrid"></div>
-          </section>
-
-          <div class="patient-management">
-            <section class="patient-editor">
-              <div class="panel-header">
-                <h2 id="staffFormTitle">新增医护</h2>
-                <button class="ghost-button" id="resetStaffForm" type="button">新建</button>
-              </div>
-              <form id="staffForm">
-                <input type="hidden" id="staffId" />
-                <div class="form-grid two">
-                  <label>
-                    <span>姓名</span>
-                    <input id="staffName" required maxlength="32" autocomplete="off" />
-                  </label>
-                  <label>
-                    <span>工号</span>
-                    <input id="staffCode" maxlength="32" autocomplete="off" />
-                  </label>
-                  <label>
-                    <span>角色</span>
-                    <select id="staffRole">
-                      <option value="nurse">护士</option>
-                      <option value="doctor">医生</option>
-                    </select>
-                  </label>
-                  <label>
-                    <span>联系电话</span>
-                    <input id="staffPhone" maxlength="32" autocomplete="off" />
-                  </label>
-                  <label>
-                    <span>上班倾向</span>
-                    <select id="staffPreferredShift">
-                      <option value="">不限</option>
-                      <option value="morning">上午</option>
-                      <option value="afternoon">下午</option>
-                    </select>
-                  </label>
-                  <label>
-                    <span>状态</span>
-                    <select id="staffStatus">
-                      <option value="active">在岗</option>
-                      <option value="paused">停用</option>
-                    </select>
-                  </label>
-                </div>
-                <label class="full-field">
-                  <span>备注</span>
-                  <textarea id="staffNote" rows="4" maxlength="300"></textarea>
-                </label>
-                <div class="form-actions">
-                  <button class="primary-button" type="submit">保存医护</button>
-                  <button class="danger-button hidden" id="deleteStaff" type="button">删除医护</button>
-                </div>
-              </form>
-            </section>
-
-            <section class="patient-list-panel">
-              <div class="panel-header">
-                <h2>医护列表</h2>
-                <input id="staffSearch" class="search-input compact" type="search" placeholder="搜索姓名、工号、电话" />
-              </div>
-              <div class="patient-table-wrap">
-                <table class="patient-table">
-                  <thead>
-                    <tr>
-                      <th>姓名</th>
-                      <th>工号</th>
-                      <th>角色</th>
-                      <th>倾向</th>
-                      <th>状态</th>
-                      <th>操作</th>
-                    </tr>
-                  </thead>
-                  <tbody id="staffTableBody"></tbody>
-                </table>
-              </div>
-            </section>
-          </div>
-        </section>
-
-        <section class="view" id="layoutView">
-          <div class="settings-layout">
-            <section class="settings-panel">
-              <div class="panel-header">
-                <h2>基础设置</h2>
-              </div>
-              <label class="full-field settings-language">
-                <span>语言 / Language</span>
-                <select id="languageSelect">
-                  <option value="zh">中文</option>
-                  <option value="en">English</option>
-                </select>
-              </label>
-              <form id="layoutForm">
-                <div class="form-grid two">
-                  <label>
-                    <span>科室名称</span>
-                    <input id="roomName" required maxlength="32" />
-                  </label>
-                  <label>
-                    <span>每排机器数</span>
-                    <input id="machinesPerRow" type="number" min="1" max="30" required />
-                  </label>
-                  <label>
-                    <span>机器排数</span>
-                    <input id="rowCount" type="number" min="1" max="20" required />
-                  </label>
-                  <label>
-                    <span>第一台从哪边开始</span>
-                    <select id="numberingStartSide">
-                      <option value="left">左边</option>
-                      <option value="right">右边</option>
-                    </select>
-                  </label>
-                  <label>
-                    <span>通用传染区名称</span>
-                    <input id="specialZoneName" maxlength="16" placeholder="如 传染区" />
-                  </label>
-                </div>
-                <div class="form-actions">
-                  <button class="primary-button" type="submit">应用布局</button>
-                  <button class="ghost-button" id="restoreDemo" type="button">恢复默认布局</button>
-                </div>
-              </form>
-              <section class="demo-tools" aria-label="演示数据">
-                <div class="panel-header compact">
-                  <h3>演示数据</h3>
-                </div>
-                <div class="form-grid two">
-                  <label>
-                    <span>患者数量</span>
-                    <input id="demoPatientCount" type="number" min="0" max="300" value="36" />
-                  </label>
-                  <label>
-                    <span>医生数量</span>
-                    <input id="demoDoctorCount" type="number" min="0" max="50" value="4" />
-                  </label>
-                  <label>
-                    <span>护士数量</span>
-                    <input id="demoNurseCount" type="number" min="0" max="200" value="10" />
-                  </label>
-                  <label>
-                    <span>HBC 患者数量</span>
-                    <input id="demoHbcCount" type="number" min="0" max="300" value="2" />
-                  </label>
-                  <label>
-                    <span>HBV 患者数量</span>
-                    <input id="demoHbvCount" type="number" min="0" max="300" value="2" />
-                  </label>
-                  <label>
-                    <span>HCV 患者数量</span>
-                    <input id="demoHcvCount" type="number" min="0" max="300" value="1" />
-                  </label>
-                  <label>
-                    <span>T 患者数量</span>
-                    <input id="demoTCount" type="number" min="0" max="300" value="1" />
-                  </label>
-                  <label>
-                    <span>严重组患者数量</span>
-                    <input id="demoSevereCount" type="number" min="0" max="300" value="4" />
-                  </label>
-                  <label>
-                    <span>演示每月血滤次数</span>
-                    <input id="demoMonthlyHdfCount" type="number" min="0" max="4" value="1" />
-                  </label>
-                </div>
-                <div class="form-actions">
-                  <button class="primary-button" id="generateDemoData" type="button">生成演示数据</button>
-                  <button class="danger-button" id="clearDemoData" type="button">清除演示数据</button>
-                </div>
-              </section>
-            </section>
-
-            <section class="layout-preview">
-              <div class="panel-header">
-                <h2>布局预览</h2>
-                <div class="preview-tools">
-                  <label>
-                    <span>点击设置</span>
-                    <select id="layoutEditMode">
-                      <option value="type:hemodialysis">设为血透</option>
-                      <option value="type:hemofiltration">设为血滤</option>
-                      <option value="type:perfusion">设为灌流</option>
-                      <option value="zone:normal">设为普通区</option>
-                      <option value="zone:severe">设为重病区</option>
-                      <option value="zone:infection">设为通用传染区</option>
-                      <option value="zone:HBC">设为 HBC 区</option>
-                      <option value="zone:HBV">设为 HBV 区</option>
-                      <option value="zone:HCV">设为 HCV 区</option>
-                      <option value="zone:T">设为 T 区</option>
-                      <option value="inactive">删除/恢复机位</option>
-                    </select>
-                  </label>
-                  <span id="layoutCountBadge" class="count-badge"></span>
-                </div>
-              </div>
-              <div id="layoutPreviewGrid" class="layout-preview-grid"></div>
-            </section>
-          </div>
-        </section>
-      </main>
-    </div>
-
-    <dialog id="assignmentDialog" class="assignment-dialog">
-      <form method="dialog" id="assignmentForm">
-        <div class="dialog-header">
-          <div>
-            <h2 id="assignmentTitle">安排患者</h2>
-            <p id="assignmentSubtitle"></p>
-          </div>
-          <button class="icon-button" value="cancel" type="submit" aria-label="关闭">×</button>
-        </div>
-        <label>
-          <span>患者</span>
-          <select id="assignmentPatient"></select>
-        </label>
-        <label>
-          <span>备注</span>
-          <textarea id="assignmentNote" rows="3" maxlength="160"></textarea>
-        </label>
-        <label>
-          <span>保存范围</span>
-          <select id="assignmentScope">
-            <option value="weekly">每周重复</option>
-            <option value="date">仅当前日期</option>
-          </select>
-        </label>
-        <div class="dialog-actions">
-          <button class="danger-button" id="removeAssignment" type="button">移除</button>
-          <div>
-            <button class="ghost-button" value="cancel" type="submit">取消</button>
-            <button class="primary-button" id="saveAssignment" value="default" type="submit">保存</button>
-          </div>
-        </div>
-      </form>
-    </dialog>
-
-    <div class="toast" id="toast" role="status" aria-live="polite"></div>
-
-    <script src="app.js"></script>
-  </body>
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta content="no-store, no-cache, must-revalidate" http-equiv="Cache-Control"/>
+<meta content="no-cache" http-equiv="Pragma"/>
+<meta content="0" http-equiv="Expires"/>
+<title>血透室本地排班系统</title>
+<link href="styles.css?v=20260617-28" rel="stylesheet"/>
+</head>
+<body>
+<div class="app-shell">
+<header class="topbar">
+<div class="brand-block">
+<div class="brand-mark">HD</div>
+<div class="brand-copy">
+<div class="brand-title-row">
+<h1 id="roomTitle"><span data-i18n="static_002">血透室本地排班系统</span></h1>
+<label class="header-language-control" title="Language">
+<span class="sr-only">Language</span>
+<select aria-label="Language" id="languageSelect"></select>
+</label>
+</div>
+<p id="storageStatus"><span data-i18n="static_003">本地自动保存，打开后自动读取</span></p>
+</div>
+</div>
+<div class="top-actions">
+<label class="date-control">
+<span><span data-i18n="static_004">日期</span></span>
+<input id="scheduleDate" type="date"/>
+</label>
+<button class="ghost-button" id="printSchedule" type="button"><span data-i18n="static_005">打印</span></button>
+<button class="primary-button" id="exportData" type="button"><span data-i18n="static_006">导出</span></button>
+<label class="ghost-button import-button" for="importData">
+<span id="importDataLabel"><span data-i18n="static_007">导入</span></span>
+<input accept="application/json" id="importData" type="file"/>
+</label>
+<button class="danger-button" id="resetAllData" type="button"><span data-i18n="static_008">全部重置</span></button>
+<button class="danger-button cache-button" data-i18n-title="static_171" id="clearAllCache" title="删除本程序保存的数据并强制重新载入最新版页面" type="button"><span data-i18n="static_009">清空所有缓存</span></button>
+<button class="ghost-button about-button" id="openAboutDialog" type="button"><span data-i18n="static_010">关于作者和程序</span></button>
+</div>
+</header>
+<nav aria-label="主功能" class="tabs" data-i18n-aria-label="static_172">
+<button class="tab-button active" data-view="schedule" type="button"><span data-i18n="static_011">排班台</span></button>
+<button class="tab-button" data-view="patients" type="button"><span data-i18n="static_012">患者库</span></button>
+<button class="tab-button" data-view="staff" type="button"><span data-i18n="static_013">医护库</span></button>
+<button class="tab-button" data-view="layout" type="button"><span data-i18n="static_014">布局设置</span></button>
+</nav>
+<main>
+<section class="view active" id="scheduleView">
+<div class="summary-grid" id="summaryGrid"></div>
+<section aria-label="周排班导航" class="week-board" data-i18n-aria-label="static_173">
+<div class="week-toolbar">
+<button class="ghost-button" id="prevWeek" type="button"><span data-i18n="static_015">上一周</span></button>
+<div>
+<h2 id="weekTitle"><span data-i18n="static_016">本周排班</span></h2>
+<p id="weekMeta"><span data-i18n="static_017">默认读取每周模板，可对单日单独调整</span></p>
+</div>
+<button class="ghost-button" id="nextWeek" type="button"><span data-i18n="static_018">下一周</span></button>
+<button class="ghost-button" id="todayButton" type="button"><span data-i18n="static_019">今天</span></button>
+</div>
+<div class="week-day-strip" id="weekDayStrip"></div>
+</section>
+<section aria-label="机器排班表" class="machine-board" data-i18n-aria-label="static_174">
+<div class="board-toolbar">
+<div>
+<h2 id="boardTitle"><span data-i18n="static_020">今日排班</span></h2>
+<p id="boardMeta"></p>
+</div>
+<div class="board-actions">
+<label class="schedule-priority-control">
+<span id="schedulePriorityLabel"><span data-i18n="static_021">排班策略</span></span>
+<select id="schedulePriority">
+<option value="patient">病人优先</option>
+<option value="staff">医护优先</option>
+<option value="smart">灵巧排班</option>
+</select>
+</label>
+<button class="primary-button" id="autoScheduleDay" type="button"><span data-i18n="static_025">生成长期周模板建议</span></button>
+<button class="ghost-button" id="saveDayAsWeeklyTemplate" type="button"><span data-i18n="static_026">本周设为长期模板</span></button>
+<button class="ghost-button" id="copyPreviousDay" type="button"><span data-i18n="static_027">复制前一天</span></button>
+<button class="danger-button" id="clearDay" type="button"><span data-i18n="static_028">清空当日</span></button>
+</div>
+</div>
+<div class="machine-rows" id="machineRows"></div>
+</section>
+</section>
+<section class="view" id="patientsView">
+<div class="patient-management">
+<section class="patient-editor">
+<div class="panel-header">
+<h2 id="patientFormTitle"><span data-i18n="static_029">新增患者</span></h2>
+<button class="ghost-button" id="resetPatientForm" type="button"><span data-i18n="static_030">新建</span></button>
+</div>
+<form id="patientForm">
+<input id="patientId" type="hidden"/>
+<div class="form-grid two">
+<label>
+<span><span data-i18n="static_031">姓名</span></span>
+<input autocomplete="off" id="patientName" maxlength="32" required=""/>
+</label>
+<label>
+<span><span data-i18n="static_032">透析号</span></span>
+<input autocomplete="off" id="dialysisNo" maxlength="32"/>
+</label>
+<label>
+<span><span data-i18n="static_033">性别</span></span>
+<select id="patientGender">
+<option value="">未填</option>
+<option value="男">男</option>
+<option value="女">女</option>
+</select>
+</label>
+<label>
+<span><span data-i18n="static_037">年龄</span></span>
+<input id="patientAge" max="120" min="0" type="number"/>
+</label>
+<label>
+<span><span data-i18n="static_038">联系电话</span></span>
+<input autocomplete="off" id="patientPhone" maxlength="32"/>
+</label>
+<label>
+<span><span data-i18n="static_039">干体重 kg</span></span>
+<input id="dryWeight" max="300" min="0" step="0.1" type="number"/>
+</label>
+<label>
+<span><span data-i18n="static_040">血管通路</span></span>
+<select id="vascularAccess">
+<option value="">未填</option>
+<option value="自体内瘘">自体内瘘</option>
+<option value="人工血管">人工血管</option>
+<option value="长期导管">长期导管</option>
+<option value="临时导管">临时导管</option>
+<option value="其他">其他</option>
+</select>
+</label>
+<label>
+<span><span data-i18n="static_047">常规治疗</span></span>
+<select id="patientTreatmentType">
+<option value="hemodialysis">血透</option>
+<option value="hemofiltration">血滤</option>
+<option value="perfusion">灌流</option>
+</select>
+</label>
+<label>
+<span><span data-i18n="static_051">每周次数</span></span>
+<input id="weeklyTreatmentCount" max="6" min="1" type="number" value="3"/>
+</label>
+<label>
+<span><span data-i18n="static_052">每月血滤次数</span></span>
+<input id="monthlyHdfCount" max="4" min="0" type="number" value="1"/>
+<small class="field-hint"><span data-i18n="static_053">仅用于常规血透患者；血滤或灌流患者不再另行生成月度血滤。</span></small>
+</label>
+<label>
+<span><span data-i18n="static_054">状态</span></span>
+<select id="patientStatus">
+<option value="active">在透</option>
+<option value="paused">暂停</option>
+</select>
+</label>
+<label>
+<span><span data-i18n="static_057">感染标识</span></span>
+<select id="infectionFlag">
+<option value="">无</option>
+<option value="HBC">HBC</option>
+<option value="HBV">HBV</option>
+<option value="HCV">HCV</option>
+<option value="T">T</option>
+</select>
+</label>
+<label>
+<span><span data-i18n="static_059">护理组别</span></span>
+<select id="careLevel">
+<option value="standard">普通组</option>
+<option value="severe">严重组</option>
+</select>
+</label>
+<label>
+<span><span data-i18n="static_062">常用班次</span></span>
+<select id="preferredShift">
+<option value="">不限</option>
+<option value="morning">上午</option>
+<option value="afternoon">下午</option>
+</select>
+</label>
+<label>
+<span><span data-i18n="static_066">长期固定机位</span></span>
+<select id="patientFixedMachine">
+<option value="">首次自动排班后固定</option>
+</select>
+<small class="field-hint"><span data-i18n="static_068">周模板会长期使用该机位；临时换位请保存为仅当前日期。月度血滤在固定机位不支持血滤时可临时换机。</span></small>
+</label>
+</div>
+<fieldset class="preference-fieldset">
+<legend><span data-i18n="static_069">透析星期倾向</span></legend>
+<div class="checkbox-grid" id="patientPreferredDays">
+<label><input type="checkbox" value="1"/><span data-i18n="static_070">周一</span></label>
+<label><input type="checkbox" value="2"/><span data-i18n="static_071">周二</span></label>
+<label><input type="checkbox" value="3"/><span data-i18n="static_072">周三</span></label>
+<label><input type="checkbox" value="4"/><span data-i18n="static_073">周四</span></label>
+<label><input type="checkbox" value="5"/><span data-i18n="static_074">周五</span></label>
+<label><input type="checkbox" value="6"/><span data-i18n="static_075">周六</span></label>
+<label><input type="checkbox" value="0"/><span data-i18n="static_076">周日</span></label>
+</div>
+</fieldset>
+<label class="full-field">
+<span><span data-i18n="static_077">备注</span></span>
+<textarea id="patientNote" maxlength="300" rows="4"></textarea>
+</label>
+<div class="form-actions">
+<button class="primary-button" type="submit"><span data-i18n="static_078">保存患者</span></button>
+<button class="danger-button hidden" id="deletePatient" type="button"><span data-i18n="static_079">删除患者</span></button>
+</div>
+</form>
+</section>
+<section class="patient-list-panel">
+<div class="panel-header">
+<h2><span data-i18n="static_080">患者列表</span></h2>
+<input class="search-input compact" data-i18n-placeholder="static_175" id="patientSearch" placeholder="搜索患者" type="search"/>
+</div>
+<div class="patient-table-wrap">
+<table class="patient-table">
+<thead>
+<tr>
+<th><span data-i18n="static_081">姓名</span></th>
+<th><span data-i18n="static_082">透析号</span></th>
+<th><span data-i18n="static_083">通路</span></th>
+<th><span data-i18n="static_084">治疗</span></th>
+<th><span data-i18n="static_085">班次</span></th>
+<th><span data-i18n="static_086">状态</span></th>
+<th><span data-i18n="static_087">操作</span></th>
+</tr>
+</thead>
+<tbody id="patientTableBody"></tbody>
+</table>
+</div>
+</section>
+</div>
+</section>
+<section class="view" id="staffView">
+<section aria-label="医护排班表" class="staff-board" data-i18n-aria-label="static_176">
+<div class="board-toolbar">
+<div>
+<h2 id="staffTitle"><span data-i18n="static_088">医护排班</span></h2>
+<p id="staffMeta"></p>
+</div>
+<label class="scope-control">
+<span><span data-i18n="static_089">保存范围</span></span>
+<select id="staffScheduleScope">
+<option value="weekly">每周重复</option>
+<option value="date">仅当前日期</option>
+</select>
+</label>
+</div>
+<div class="staff-schedule-grid" id="staffScheduleGrid"></div>
+</section>
+<div class="patient-management">
+<section class="patient-editor">
+<div class="panel-header">
+<h2 id="staffFormTitle"><span data-i18n="static_092">新增医护</span></h2>
+<button class="ghost-button" id="resetStaffForm" type="button"><span data-i18n="static_093">新建</span></button>
+</div>
+<form id="staffForm">
+<input id="staffId" type="hidden"/>
+<div class="form-grid two">
+<label>
+<span><span data-i18n="static_094">姓名</span></span>
+<input autocomplete="off" id="staffName" maxlength="32" required=""/>
+</label>
+<label>
+<span><span data-i18n="static_095">工号</span></span>
+<input autocomplete="off" id="staffCode" maxlength="32"/>
+</label>
+<label>
+<span><span data-i18n="static_096">角色</span></span>
+<select id="staffRole">
+<option value="nurse">护士</option>
+<option value="doctor">医生</option>
+</select>
+</label>
+<label>
+<span><span data-i18n="static_099">联系电话</span></span>
+<input autocomplete="off" id="staffPhone" maxlength="32"/>
+</label>
+<label>
+<span><span data-i18n="static_100">上班倾向</span></span>
+<select id="staffPreferredShift">
+<option value="">不限</option>
+<option value="morning">上午</option>
+<option value="afternoon">下午</option>
+</select>
+</label>
+<label>
+<span><span data-i18n="static_104">状态</span></span>
+<select id="staffStatus">
+<option value="active">在岗</option>
+<option value="paused">停用</option>
+</select>
+</label>
+</div>
+<label class="full-field">
+<span><span data-i18n="static_107">备注</span></span>
+<textarea id="staffNote" maxlength="300" rows="4"></textarea>
+</label>
+<div class="form-actions">
+<button class="primary-button" type="submit"><span data-i18n="static_108">保存医护</span></button>
+<button class="danger-button hidden" id="deleteStaff" type="button"><span data-i18n="static_109">删除医护</span></button>
+</div>
+</form>
+</section>
+<section class="patient-list-panel">
+<div class="panel-header">
+<h2><span data-i18n="static_110">医护列表</span></h2>
+<input class="search-input compact" data-i18n-placeholder="static_177" id="staffSearch" placeholder="搜索姓名、工号、电话" type="search"/>
+</div>
+<div class="patient-table-wrap">
+<table class="patient-table">
+<thead>
+<tr>
+<th><span data-i18n="static_111">姓名</span></th>
+<th><span data-i18n="static_112">工号</span></th>
+<th><span data-i18n="static_113">角色</span></th>
+<th><span data-i18n="static_114">倾向</span></th>
+<th><span data-i18n="static_115">状态</span></th>
+<th><span data-i18n="static_116">操作</span></th>
+</tr>
+</thead>
+<tbody id="staffTableBody"></tbody>
+</table>
+</div>
+</section>
+</div>
+</section>
+<section class="view" id="layoutView">
+<div class="settings-layout">
+<section class="settings-panel">
+<div class="panel-header">
+<h2><span data-i18n="static_117">基础设置</span></h2>
+</div>
+<form id="layoutForm">
+<div class="form-grid two">
+<label>
+<span><span data-i18n="static_120">科室名称</span></span>
+<input id="roomName" maxlength="32" required=""/>
+</label>
+<label>
+<span><span data-i18n="static_121">每排机器数</span></span>
+<input id="machinesPerRow" max="30" min="1" required="" type="number"/>
+</label>
+<label>
+<span><span data-i18n="static_122">机器排数</span></span>
+<input id="rowCount" max="20" min="1" required="" type="number"/>
+</label>
+<label>
+<span><span data-i18n="static_123">第一台从哪边开始</span></span>
+<select id="numberingStartSide">
+<option value="left">左边</option>
+<option value="right">右边</option>
+</select>
+</label>
+<label>
+<span><span data-i18n="static_126">通用传染区名称</span></span>
+<input data-i18n-placeholder="static_178" id="specialZoneName" maxlength="16" placeholder="如 传染区"/>
+</label>
+</div>
+<div class="form-actions">
+<button class="primary-button" type="submit"><span data-i18n="static_127">应用布局</span></button>
+<button class="ghost-button" id="restoreDemo" type="button"><span data-i18n="static_128">恢复默认布局</span></button>
+</div>
+</form>
+<section aria-label="演示数据" class="demo-tools" data-i18n-aria-label="static_179">
+<div class="panel-header compact">
+<h3><span data-i18n="static_129">演示数据</span></h3>
+</div>
+<div class="form-grid two">
+<label>
+<span><span data-i18n="static_130">患者数量</span></span>
+<input id="demoPatientCount" max="300" min="0" type="number" value="36"/>
+</label>
+<label>
+<span><span data-i18n="static_131">医生数量</span></span>
+<input id="demoDoctorCount" max="50" min="0" type="number" value="4"/>
+</label>
+<label>
+<span><span data-i18n="static_132">护士数量</span></span>
+<input id="demoNurseCount" max="200" min="0" type="number" value="10"/>
+</label>
+<label>
+<span><span data-i18n="static_133">HBC 患者数量</span></span>
+<input id="demoHbcCount" max="300" min="0" type="number" value="0"/>
+</label>
+<label>
+<span><span data-i18n="static_134">HBV 患者数量</span></span>
+<input id="demoHbvCount" max="300" min="0" type="number" value="2"/>
+</label>
+<label>
+<span><span data-i18n="static_135">HCV 患者数量</span></span>
+<input id="demoHcvCount" max="300" min="0" type="number" value="1"/>
+</label>
+<label>
+<span><span data-i18n="static_136">T 患者数量</span></span>
+<input id="demoTCount" max="300" min="0" type="number" value="1"/>
+</label>
+<label>
+<span><span data-i18n="static_137">严重组患者数量</span></span>
+<input id="demoSevereCount" max="300" min="0" type="number" value="4"/>
+</label>
+<label>
+<span><span data-i18n="static_138">演示每月血滤次数</span></span>
+<input id="demoMonthlyHdfCount" max="4" min="0" type="number" value="1"/>
+</label>
+</div>
+<div class="form-actions">
+<button class="primary-button" id="generateDemoData" type="button"><span data-i18n="static_139">生成演示数据</span></button>
+<button class="danger-button" id="clearDemoData" type="button"><span data-i18n="static_140">清除演示数据</span></button>
+</div>
+</section>
+</section>
+<section class="layout-preview">
+<div class="panel-header">
+<h2><span data-i18n="static_141">布局预览</span></h2>
+<div class="preview-tools">
+<label>
+<span><span data-i18n="static_142">点击设置</span></span>
+<select id="layoutEditMode">
+<option value="type:hemodialysis">设为血透</option>
+<option value="type:hemofiltration">设为血滤</option>
+<option value="type:perfusion">设为灌流</option>
+<option value="zone:normal">设为普通区</option>
+<option value="zone:severe">设为重病区</option>
+<option value="zone:infection">设为通用传染区</option>
+<option value="zone:HBC">设为 HBC 区</option>
+<option value="zone:HBV">设为 HBV 区</option>
+<option value="zone:HCV">设为 HCV 区</option>
+<option value="zone:T">设为 T 区</option>
+<option value="paused">暂停/恢复机器（故障）</option>
+<option value="inactive">删除/恢复机位</option>
+</select>
+</label>
+<span class="count-badge" id="layoutCountBadge"></span>
+</div>
+</div>
+<div class="layout-preview-grid" id="layoutPreviewGrid"></div>
+</section>
+</div>
+</section>
+</main>
+</div>
+<dialog class="assignment-dialog about-dialog" id="aboutDialog">
+<form id="aboutForm" method="dialog">
+<div class="dialog-header">
+<div>
+<h3 id="aboutDialogTitle"><span data-i18n="static_155">关于作者和程序</span></h3>
+<p id="aboutDialogSubtitle"><span data-i18n="static_156">开源 · 免费 · 祝福所有医护</span></p>
+</div>
+</div>
+<div class="about-dialog-body">
+<p id="aboutAuthorText"><span data-i18n="static_157">作者本人是透析患者，程序完全开源，完全免费。</span></p>
+<p id="aboutThanksText"><span data-i18n="static_158">感谢世界上所有的医护，希望你们每天都开开心心，健健康康。</span></p>
+<p class="about-contact" id="aboutContactText"><span data-i18n="static_159">有任何需求、建议或问题，欢迎联系：</span><a href="mailto:434881918@qq.com">434881918@qq.com</a>
+</p>
+<p class="about-sign"><span data-i18n="static_160">卓韵</span></p>
+</div>
+<div class="dialog-actions">
+<div></div>
+<button class="primary-button" type="submit" value="close"><span data-i18n="static_161">关闭</span></button>
+</div>
+</form>
+</dialog>
+<dialog class="assignment-dialog" id="assignmentDialog">
+<form id="assignmentForm" method="dialog">
+<div class="dialog-header">
+<div>
+<h2 id="assignmentTitle"><span data-i18n="static_162">安排患者</span></h2>
+<p id="assignmentSubtitle"></p>
+</div>
+<button aria-label="关闭" class="icon-button" data-i18n-aria-label="static_180" type="submit" value="cancel">×</button>
+</div>
+<label>
+<span><span data-i18n="static_163">患者</span></span>
+<select id="assignmentPatient"></select>
+</label>
+<label>
+<span><span data-i18n="static_164">备注</span></span>
+<textarea id="assignmentNote" maxlength="160" rows="3"></textarea>
+</label>
+<label>
+<span><span data-i18n="static_165">保存范围</span></span>
+<select id="assignmentScope">
+<option value="weekly">每周重复</option>
+<option value="date">仅当前日期</option>
+</select>
+</label>
+<div class="dialog-actions">
+<button class="danger-button" id="removeAssignment" type="button"><span data-i18n="static_168">移除</span></button>
+<div>
+<button class="ghost-button" type="submit" value="cancel"><span data-i18n="static_169">取消</span></button>
+<button class="primary-button" id="saveAssignment" type="submit" value="default"><span data-i18n="static_170">保存</span></button>
+</div>
+</div>
+</form>
+</dialog>
+<div aria-live="polite" class="toast" id="toast" role="status"></div>
+<script src="languages.js?v=20260617-28"></script>
+<script src="app.js?v=20260617-28"></script>
+</body>
 </html>
