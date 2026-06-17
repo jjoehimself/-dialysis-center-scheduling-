@@ -1,3 +1,28 @@
+# 全免费 · 全开源 · 全本地｜超简单的血透中心排班系统
+
+无需安装，无需服务器，无需数据库。
+
+只需下载项目中的全部文件，将它们放在同一个文件夹内，然后双击运行 `index.html`，即可立即使用。
+
+患者资料、医护资料、机器布局和排班数据全部保存在当前电脑的浏览器本地，不会自动上传到任何服务器。
+
+---
+
+# Completely Free · Fully Open Source · 100% Local
+
+## An Easy-to-Use Scheduling System for Hemodialysis Centers
+
+No installation, server, or database is required.
+
+Simply download all project files, place them in the same folder, and open `index.html` to start using the system.
+
+Patient records, staff information, machine layouts, and scheduling data are stored locally in the browser on the current computer. Nothing is automatically uploaded to any server.
+
+
+
+
+
+
 # 血透室排班系统
 
 ## 默认机器布局
